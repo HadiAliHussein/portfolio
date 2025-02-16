@@ -4,11 +4,14 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
 import TextField from '@mui/material/TextField';
+import emailjs from '@emailjs/browser';
 
 function Contact() {
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [message, setMessage] = useState<string>('');
+
+  const [emailSent, setEmailSent] = useState<boolean>(false);
 
   const [nameError, setNameError] = useState<boolean>(false);
   const [emailError, setEmailError] = useState<boolean>(false);
@@ -23,19 +26,29 @@ function Contact() {
     setEmailError(email === '');
     setMessageError(message === '');
 
-    if (name !== '' && email !== '' && message !== '') {
-      // Create the mailto link with subject and body pre-filled
-      const mailtoLink = `mailto:hadi@alihussein.de?subject=Message%20from%20${encodeURIComponent(name)}&body=${encodeURIComponent(message)}%0A%0A${encodeURIComponent(email)}`;
+    /* Uncomment below if you want to enable the emailJS */
 
+     if (name !== '' && email !== '' && message !== '') {
+       var templateParams = {
+         name: name,
+         email: email,
+         message: message
+       };
 
-      // Open the default email client with the pre-filled email
-      window.location.href = mailtoLink;
-
-      // Clear form fields after sending
-      setName('');
-      setEmail('');
-      setMessage('');
-    }
+       console.log(templateParams);
+       emailjs.send('service_fvjl9t9', 'template_p0iij6v', templateParams, '9U-glshQMQ-Q6JS10').then(
+         (response) => {
+           console.log('SUCCESS!', response.status, response.text);
+           setEmailSent(true);
+         },
+         (error) => {
+           console.log('FAILED...', error);
+         },
+       );
+       setName('');
+       setEmail('');
+       setMessage('');
+     }
   };
 
   return (
@@ -55,6 +68,7 @@ function Contact() {
                 className="body-form"
                 onChange={(e) => {
                   setName(e.target.value);
+                  setEmailSent(false);
                 }}
                 error={nameError}
                 helperText={nameError ? "Please enter your name" : ""}
@@ -68,6 +82,7 @@ function Contact() {
                 className="body-form"
                 onChange={(e) => {
                   setEmail(e.target.value);
+                  setEmailSent(false);
                 }}
                 error={emailError}
                 helperText={emailError ? "Please enter your email or phone number" : ""}
@@ -84,13 +99,20 @@ function Contact() {
               value={message}
               onChange={(e) => {
                 setMessage(e.target.value);
+                setEmailSent(false);
               }}
               error={messageError}
               helperText={messageError ? "Please enter the message" : ""}
             />
+            <div>
+              {emailSent &&
+              <b className='text-info'>Message has been sent to ✉️hadi@alihussein.de</b>}
+
+
             <Button variant="contained" endIcon={<SendIcon />} onClick={sendEmail}>
               Send
             </Button>
+            </div>
           </Box>
         </div>
       </div>
