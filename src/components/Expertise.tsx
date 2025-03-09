@@ -44,7 +44,8 @@ const labelsThird = [
     "Hugging Face",
     "LlamaIndex",
     "Streamlit",
-    "Ollama"
+    "Ollama",
+    "LlamaCPP"
 ];
 
 function Expertise() {
